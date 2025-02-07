@@ -1,7 +1,7 @@
 class Config:
     # Stack name
     # Change this value if you want to create a new instance of the stack
-    STACK_NAME = "Streamlit"
+    STACK_NAME = "OrderingAI"
     
     # Put your own custom value here to prevent ALB to accept requests from
     # other clients that CloudFront. You can choose any random string.
@@ -14,8 +14,8 @@ class Config:
     SECRETS_MANAGER_ID = f"{STACK_NAME}ParamCognitoSecret12345"
 
     # AWS region in which you want to deploy the cdk stack
-    DEPLOYMENT_REGION = "us-east-1"
+    DEPLOYMENT_REGION = "us-west-2"
 
     # If Bedrock is not activated in us-east-1 in your account, set this value
     # accordingly
-    BEDROCK_REGION = "us-east-1"
+    BEDROCK_REGION = "us-west-2"

@@ -99,8 +99,8 @@ class CdkStack(Stack):
         fargate_task_definition = ecs.FargateTaskDefinition(
             self,
             f"{prefix}WebappTaskDef",
-            memory_limit_mib=512,
-            cpu=256,
+            memory_limit_mib=2048,
+            cpu=1024,
         )
 
         # Build Dockerfile from local folder and push to ECR
