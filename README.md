@@ -1,4 +1,24 @@
-# deploy-streamlit-app
+# Expanding Agile beyond Product development 🚀
+The true spirit of Agile is achieved when we are able to implement it truly end-2-end. Agile has to push its boundary beyond just the product development. The requirement to solve business problems are undergoing a radical transition towards deliver solutions at higher pace while keeping the pulse on the requirements right. AI led development and Infrastructure as Code (e.g., CDK) have made it easy for the **Product and Technical Program Managers** to implement Agile during product design phase itself. By the time Machine learning scientists would have worked a protoype of a solution, they need cloud native components ready to support the run. Experimental products are getting closer to production product. The 80-20 rule applies: while 20% of business problems demand complex, long-term solutions, the vast majority (80%) require quick, tailored solutions built to last for a specific time interval.
+Traditional product design methodology - wireframes and mockups offer valuable feedback, but they don't truly test the functionality or effectiveness of a solution. Getting a working prototype in front of users quickly is crucial for gathering actionable insights—especially when time is of the essence. AI is now enabling us to bypass traditional product exploration bottlenecks and get straight to working solutions—continuously exploiting the Agile values and principle.
+
+My focus with this project was on rapidly deploying the trained model (**_within half a day ~ 4 hours_**) and setting up the necessary supporting components, that iteratively helps the users to define the product. This project demonstrates how these new methodologies can significantly reduce the time required to deploy a locally trained AI solution tailored to a specific use case. By streamlining the deployment process, we can rapidly deliver working solutions for the 80% of business problems that need them now. This allows product managers to validate hypotheses more quickly, adapt to user needs more effectively, and deliver value faster than ever before. It empowers product managers to get real-world feedback on working prototypes earlier in the development cycle, enabling data-driven decision-making and faster time-to-market for targeted solutions.  
+
+This project utilizes a modern approach to deploying AI solutions, leveraging key components:
+* **Docker**: Containerizing the locally trained AI model for consistent execution and easy deployment. 📦   
+* **Orchestration (Fargate/ECS)**: Managing the containers for scalability and reliability, allowing us to adapt quickly to changing demands. 🕺   
+* **Connectivity (Internet Gateway/Load Balancers)**: Enabling secure and accessible endpoints, crucial for rapid user testing. 🚦
+* **Security (Cognito - OPTIONAL)**: Implementing user authentication and authorization, ensuring data security from the start. 🕶️
+* **User Interface (Streamlit)**: Building a simple user interface for interaction with the AI, prioritizing speed of development. 🕹️
+* **Development Aid (e.g., Amazon Q)**: Connecting to a knowledge base for information retrieval, enabling quick access to relevant data for specific use cases. 📚
+* **Core Language (Python)**: Chosen for its versatility and speed in the AI domain. 🐍  
+* **AWS CDK** – The backbone for the Infrastructure as a Code.
+
+## Demo Page
+
+![Architecture diagram](img/demo.gif)
+
+# Deploying the streamlit app
 
 This app can be used as a starting point to easily create and deploy a GenAI demo, with web interface and user authentication. It is written in python only, with cdk template to deploy on AWS.
 
@@ -29,7 +49,6 @@ Prerequisites:
 * python >= 3.8
 * docker
 * use a Chrome browser for development
-* `anthropic.claude-v2` model activated in Amazon Bedrock in your AWS account
 * the environment used to create this demo was an AWS Cloud9 m5.large instance with Amazon Linux 2023, but it should also work with other configurations. It has also been tested on a mac laptop with colima as container runtime.
 * You also need to install the AWS Command Line Interface (CLI), the AWS Cloud Development KIT (CDK), and to configure the AWS CLI on your development environment (not required if you use Cloud9, as it is already configured by default). One way to configure the AWS CLI is to get your access key through the AWS console, and use the `aws configure` command in your terminal to setup your credentials.
 
@@ -61,12 +80,11 @@ and the Cognito user pool id.
 5. From your browser, connect to the CloudFront distribution url.
 6. Log in to the Streamlit app with the user you have created in Cognito.
 
-## Testing and developing in Cloud9
+## Testing and developing in Locally (MacOS)
 
-After deployment of the cdk template containing the Cognito user pool required for authentication, you can test the Streamlit app directly from Cloud9.
-You can either use docker, but this would require setting up a role with appropriate permissions, or run the Streamlit app directly in your terminal after having installed the required python dependencies.
+After deployment of the cdk template you can test the Streamlit app directly from MacOS.
 
-To run the Streamlit app directly:
+To run and develop the Streamlit app locally:
 
 1. If you have activated a virtual env for deploying the cdk template, deactivate it:
 
@@ -89,45 +107,14 @@ pip install -r requirements.txt
 streamlit run app.py --server.port 8080
 ```
 
-4. Click on the Preview/Preview running application button in Cloud9, and click on the button to Pop out the browser in a new window, as the Cloud9 embedded browser does not keep session cookies, which prevents the authentication mechanism to work properly.
-If the new window does not display the app, you may need to configure your browser to accept cross-site tracking cookies.
+4. You can now modify the streamlit app to build your own demo!
 
-5. You can now modify the streamlit app to build your own demo!
-
-## Some limitations
-
-* The connection between CloudFront and the ALB is in HTTP, not SSL encrypted.
-This means traffic between CloudFront and the ALB is unencrypted.
-It is **strongly recommended** to configure HTTPS by bringing your own domain name and SSL/TLS certificate to the ALB.
-* The provided code is intended as a demo and starting point, not production ready.
-The Python app relies on third party libraries like Streamlit and streamlit-cognito-auth.
-As the developer, it is your responsibility to properly vet, maintain, and test all third party dependencies.
-The authentication and authorization mechanisms in particular should be thoroughly evaluated.
-More generally, you should perform security reviews and testing before incorporating this demo code in a production application or with sensitive data.
-* In this demo, Amazon Cognito is in a simple configuration.
-Note that Amazon Cognito user pools can be configured to enforce strong password policies,
-enable multi-factor authentication,
-and set the AdvancedSecurityMode to ENFORCED to enable the system to detect and act upon malicious sign-in attempts.
-* AWS provides various services, not implemented in this demo, that can improve the security of this application.
-Network security services like network ACLs and AWS WAF can control access to resources.
-You could also use AWS Shield for DDoS protection and Amazon GuardDuty for threats detection.
-Amazon Inspector performs security assessments.
-There are many more AWS services and best practices that can enhance security -
-refer to the AWS Shared Responsibility Model and security best practices guidance for additional recommendations.
-The developer is responsible for properly implementing and configuring these services to meet their specific security requirements.
-* Regular rotation of secrets is recommended, not implemented in this demo.
 
 ## Acknowledgments
 
 This code is inspired from:
 
-* https://github.com/tzaffi/streamlit-cdk-fargate.git
-* https://github.com/aws-samples/build-scale-generative-ai-applications-with-amazon-bedrock-workshop/
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-## License
-
-This application is licensed under the MIT-0 License. See the LICENSE file.
+* AWS Streamlit Boilerplate [Link Here](https://github.com/aws-samples/deploy-streamlit-app/tree/main)
+* The Blog Post from [Peyman Kor](https://www.linkedin.com/in/peyman-kor/). The BlogPost [Link Here](https://medium.com/towards-data-science/optimizing-inventory-management-with-reinforcement-learning-a-hands-on-python-guide-7833df3d25a6)
+* Mentor and Guide Guilhem Busset on CDK [LinkedIn](https://www.linkedin.com/in/guilhem-busset-91a045a5/)
+* I can be reached out here [LinkedIn](https://www.linkedin.com/in/zishan-yusuf/)
