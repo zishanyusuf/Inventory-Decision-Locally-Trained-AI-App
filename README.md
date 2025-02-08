@@ -15,7 +15,7 @@ This project utilizes a modern approach to deploying AI solutions, leveraging ke
 * **AWS CDK** – The backbone for the Infrastructure as a Code.
 
 ## Demo Page
-
+[App Link Here](https://d2bhayubk7i62r.cloudfront.net/)
 ![Architecture diagram](img/demo.gif)
 
 # Deploying the streamlit app
