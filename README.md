@@ -7,7 +7,7 @@ My focus with this project was on rapidly deploying the trained model (**_within
 This project utilizes a modern approach to deploying AI solutions, leveraging key components:
 * **Docker**: Containerizing the locally trained AI model for consistent execution and easy deployment. 📦   
 * **Orchestration (Fargate/ECS)**: Managing the containers for scalability and reliability, allowing us to adapt quickly to changing demands. 🕺   
-* **Connectivity (Internet Gateway/Load Balancers)**: Enabling secure and accessible endpoints, crucial for rapid user testing. 🚦
+* **Connectivity (CloudFronting the Load Balancers)**: Enabling secure and accessible endpoints, crucial for rapid user testing. 🚦
 * **Security (Cognito - OPTIONAL)**: Implementing user authentication and authorization, ensuring data security from the start. 🕶️
 * **User Interface (Streamlit)**: Building a simple user interface for interaction with the AI, prioritizing speed of development. 🕹️
 * **Development Aid (e.g., Amazon Q)**: Connecting to a knowledge base for information retrieval, enabling quick access to relevant data for specific use cases. 📚
