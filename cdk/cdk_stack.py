@@ -48,12 +48,12 @@ class CdkStack(Stack):
                                        )
 
 
-        # VPC for ALB and ECS cluster
+        # VPC for ALB and ECS cluster. Creates also public and private subnets in each AZ
         vpc = ec2.Vpc(
             self,
             f"{prefix}AppVpc",
             ip_addresses=ec2.IpAddresses.cidr("10.0.0.0/16"),
-            max_azs=2,
+            max_azs=2, # This also creates subnets in 2 Availability Zones. 2 Public Subnets (one in each AZ) and 2 Private Subnets (one in each AZ)
             vpc_name=f"{prefix}-stl-vpc",
             nat_gateways=1,
         )
@@ -74,7 +74,7 @@ class CdkStack(Stack):
 
         ecs_security_group.add_ingress_rule(
             peer=alb_security_group,
-            connection=ec2.Port.tcp(8501),
+            connection=ec2.Port.tcp(8501),  #(1.a. its about ALB accessing containers which in turn access the streamlit docker image - refer fargate task definition)
             description="ALB traffic",
         )
 
@@ -85,7 +85,7 @@ class CdkStack(Stack):
             enable_fargate_capacity_providers=True,
             vpc=vpc)
 
-        # ALB to connect to ECS
+        # ALB to connect to ECS. ALB acts as a first entry point from users outside into the application. "internet_facing=True" ensures that ALB gets a unique global IP address
         alb = elbv2.ApplicationLoadBalancer(
             self,
             f"{prefix}Alb",
@@ -93,17 +93,17 @@ class CdkStack(Stack):
             internet_facing=True,
             load_balancer_name=f"{prefix}-stl",
             security_group=alb_security_group,
-            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
+            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC), #Selects the Public subnet defined in each AZ
         )
 
         fargate_task_definition = ecs.FargateTaskDefinition(
             self,
             f"{prefix}WebappTaskDef",
-            memory_limit_mib=2048,
-            cpu=1024,
+            memory_limit_mib=2048, #2 GB
+            cpu=1024, # 2 vCPU size
         )
 
-        # Build Dockerfile from local folder and push to ECR
+        # Build Dockerfile from local folder and push to ECR. This is the part where the streamlit Docker goes directly into the AWS, so we don't have to install the streamlit separately to run the app
         image = ecs.ContainerImage.from_asset('docker_app')
 
         fargate_task_definition.add_container(
@@ -111,10 +111,10 @@ class CdkStack(Stack):
             # Use an image from DockerHub
             image=image,
             port_mappings=[
-                ecs.PortMapping(
+                ecs.PortMapping(        # Port mappings allow containers to access ports on the host container instance to send or receive traffic (1.b. its about container accessing docker)
                     container_port=8501,
                     protocol=ecs.Protocol.TCP)],
-            logging=ecs.LogDrivers.aws_logs(stream_prefix="WebContainerLogs"),
+            logging=ecs.LogDrivers.aws_logs(stream_prefix="WebContainerLogs"), #default - Containers use the same logging driver that the Docker daemon uses
         )
 
         service = ecs.FargateService(
@@ -125,7 +125,7 @@ class CdkStack(Stack):
             service_name=f"{prefix}-stl-front",
             security_groups=[ecs_security_group],
             vpc_subnets=ec2.SubnetSelection(
-                subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
+                subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS), #Selects the Private subnet defined in earlier step in each AZ
         )
 
         # Grant access to Bedrock
@@ -163,7 +163,8 @@ class CdkStack(Stack):
             ),
         )
 
-        # ALB Listener
+        # ALB Listener. Even though the port 80 is HTTP, but in reality the URL for this app is HTTPS secured. Reason for this is we are distirbuting the APIwith CloudFront.
+        # CloudFront automatically provides HTTPS (port 443) at the edge locations using its default SSL/TLS certificate, even if ALB is using HTTP (port 80)
         http_listener = alb.add_listener(
             f"{prefix}HttpListener",
             port=80,
@@ -183,7 +184,7 @@ class CdkStack(Stack):
             targets=[service],
         )
         # add a default action to the listener that will deny all requests that
-        # do not have the custom header
+        # do not have the custom header.
         http_listener.add_action(
             "default-action",
             action=elbv2.ListenerAction.fixed_response(
